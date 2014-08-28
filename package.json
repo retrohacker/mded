@@ -1,0 +1,27 @@
+{
+  "name": "notes",
+  "version": "0.0.0",
+  "bin" : {"notes" : "./wrapper.js"},
+  "main": "index.html",
+  "scripts": {
+    "start": "nodewebkit"
+  },
+  "window": {
+    "title": "Notes",
+    "toolbar": false,
+    "frame": false,
+    "width": 800,
+    "height": 500,
+    "min_width": 800,
+    "min_height": 500,
+    "max_width": 800,
+    "max_height": 500
+  },
+  "license": "ISC",
+  "dependencies": {
+    "marked": "^0.3.2",
+    "nodewebkit": "^0.10.2"
+  },
+  "devDependencies": {},
+  "author": "William Blankenship <william.jblankenship@gmail.com>"
+}

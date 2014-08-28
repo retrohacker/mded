@@ -1,0 +1,85 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="view">
+      <div id="pre-editor"></div>
+      <div id="editor"></div>
+      <div id="post-editor"></div>
+    </div>
+    <script src="./ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      var doc = require('./doc.js')
+      var gui = require('nw.gui')
+      process.chdir(gui.App.argv[0])
+      console.log(process.cwd())
+      /**
+       * Handle all ace
+       */
+      var editor = ace.edit("editor")
+      editor.setTheme("ace/theme/monokai")
+      editor.getSession().setMode("ace/mode/markdown")
+      var container = document.getElementById("editor")
+      var updateHeight = function() {
+        container.style.height =
+          editor.getSession().getDocument().getLength() *
+          editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth()
+        editor.renderer.onResize(true)
+      }
+      editor.on("change",updateHeight)
+      editor.on("change",function() {
+        doc.updateCurrentLine(editor.getSession().toString())
+      })
+      updateHeight()
+
+      /**
+       * Handle all input events. Prevent them from falling to ace.
+       */
+      var view = document.getElementById("view")
+      view.addEventListener("keydown",function(e) {
+        if(e.keyCode===40) { //down
+          if( editor.session.getLength() ===
+              editor.selection.getCursor().row+1) {
+            e.stopPropagation()
+            doc.incr()
+            return
+          }
+        }
+        if(e.keyCode===38) { //up
+          if( editor.selection.getCursor().row === 0) {
+            e.stopPropagation()
+            doc.decr()
+            return
+          }
+        }
+        if(e.keyCode===8) { //backspace
+          if(editor.getSession().toString().length === 0) {
+            doc.deleteCurrent()
+            e.stopPropagation()
+            return
+          }
+        }
+        console.log(e.keyCode)
+      },true)
+    </script>
+    <script>
+      var doc = require('./doc.js')
+      var gui = require('nw.gui')
+      var marked = require('marked')
+
+      var pre = document.getElementById("pre-editor")
+      var post = document.getElementById("post-editor")
+
+      doc.file = gui.App.argv[1]
+      doc.init(doc.file,function() {
+        updateEditor()
+        doc.on("change",updateEditor)
+      })
+      function updateEditor() {
+        pre.innerHTML = marked(doc.getPrev())
+        post.innerHTML = marked(doc.getNext())
+        editor.getSession().getDocument().setValue(doc.getCurrent())
+      }
+    </script>
+  </body>
+</html>
