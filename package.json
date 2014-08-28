@@ -1,7 +1,9 @@
 {
-  "name": "notes",
+  "name": "mded",
   "version": "0.0.0",
-  "bin" : {"notes" : "./wrapper.js"},
+  "bin": {
+    "notes": "./wrapper.js"
+  },
   "main": "index.html",
   "scripts": {
     "start": "nodewebkit"
@@ -23,5 +25,19 @@
     "nodewebkit": "^0.10.2"
   },
   "devDependencies": {},
-  "author": "William Blankenship <william.jblankenship@gmail.com>"
+  "author": "William Blankenship <william.jblankenship@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wblankenship/mded.git"
+  },
+  "keywords": [
+    "markdown",
+    "editor",
+    "ace"
+  ],
+  "bugs": {
+    "url": "https://github.com/wblankenship/mded/issues"
+  },
+  "homepage": "https://github.com/wblankenship/mded",
+  "description": "A simple, inline, markdown editor"
 }
