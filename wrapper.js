@@ -42,7 +42,7 @@ function patch() {
     console.log("Patching nodewebkit with libudev fix...")
     return exec(sed, function(e,stdout,stderr) {
       if(!e) return console.log("Success!")
-      console.log(e.toString())
+      console.log(e.toString().trim())
       if(e.toString().indexOf('Permission')!==-1) {
         console.log("FAILED! Try running as sudo")
       } else {
