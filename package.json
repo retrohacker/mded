@@ -1,6 +1,6 @@
 {
   "name": "mded",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "bin": "./wrapper.js",
   "main": "index.html",
   "scripts": {
