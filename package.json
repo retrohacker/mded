@@ -20,7 +20,8 @@
   "license": "ISC",
   "dependencies": {
     "marked": "^0.3.2",
-    "nodewebkit": "^0.10.2"
+    "nodewebkit": "wblankenship/nodewebkit",
+    "wrench": "^1.5.8"
   },
   "devDependencies": {},
   "author": "William Blankenship <william.jblankenship@gmail.com>",
