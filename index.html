@@ -36,6 +36,7 @@
        * Handle all input events. Prevent them from falling to ace.
        */
       var view = document.getElementById("view")
+      //Grab input before ace has received it
       view.addEventListener("keydown",function(e) {
         if(e.keyCode===40) { //down
           if( editor.session.getLength() ===
@@ -46,7 +47,7 @@
           }
         }
         if(e.keyCode===38) { //up
-          if( editor.selection.getCursor().row === 0) {
+          if(editor.selection.getCursor().row === 0) {
             e.stopPropagation()
             doc.decr()
             return
@@ -61,6 +62,17 @@
         }
         console.log(e.keyCode)
       },true)
+      //Grab input after ace has received it
+      view.addEventListener("keydown",function(e) {
+        if(e.keyCode===13) { //enter
+          console.log("Updating")
+          doc.updateCurrentLine(editor.getSession().toString())
+          console.log("Rows before: "+doc.rows())
+          doc.incr()
+          console.log("Rows after: "+doc.rows())
+          return
+        }
+      })
     </script>
     <script>
       var doc = require('./doc.js')
