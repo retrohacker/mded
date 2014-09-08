@@ -11,7 +11,7 @@ var path = require('path')
 /**
  * mded always requires 1 argument (the name of the file being edited)
  */
-if(!process.argv.length!==3) return usage()
+if(process.argv.length!==3) return usage()
 /**
  * Check to see if we are being prompted to run the patching util.
  */
