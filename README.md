@@ -28,3 +28,5 @@ sudo npm link
 ```
 
 This will install your local version as a command line util. Whenever you make changes to the codebase, re-run `npm link`.
+
+You will also probably want to open `package.json` and change `toolbar: false` to `toolbar: true`. It will allow you to view the inspector.

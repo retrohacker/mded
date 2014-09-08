@@ -1,46 +1,68 @@
+/**
+ * doc.js is the main datastructure of mded. Everything else is simply an
+ * interface to doc. It represents a single markdown document. It keeps track
+ * of which line the user is on, and allows navigating the document. It is a
+ * simple abstraction which allows us to easily navigate the document line by
+ * line without considering the contents of the document itself.
+ */
 var EventEmitter = require('events').EventEmitter
 var fs = require('fs')
 var fsWorker = require('./fsWorker.js')
 
+/**
+ * Since everything is an interface to doc, we need a way of notifing other
+ * parts of mded about changes to our document. Making doc an extension of
+ * EventEmitter allows us to notify other parts of our code when our document
+ * changes, simply by registering event listeners.
+ */
 module.exports = doc = new EventEmitter()
 
+/**
+ * Changed is a simple state machine keeping track of changes between writes
+ */
 var changed = false
+
+/**
+ * Our current way of storing the document is splitting it around the newline
+ * character. This is transparent to eveything which interacts with doc, as we
+ * have defined an interface which does not expose the contents array.
+ */
 var contents = []
 
+/**
+ * doc.init loads a file from the HDD and does some wizardry to it, preparing
+ * it to be editied by the user
+ */
 doc.init = function init(file,cb) {
-  doc.file = file
+  doc.file = file // Keep track of the filename we are editing
   fs.readFile(file,{"encoding":"utf-8"},function(e,data) {
-    data = data || ""
-    data = data.replace(/\r\n|\r/g, '\n')
-               .replace(/\t/g, '  ')
-               .replace(/\u00a0/g, ' ')
-               .replace(/\u2424/g, '\n')
-    contents = [data]
-    //var lexer = new marked.Lexer()
     /**
-    Object.keys(lexer.rules).forEach(function(v) {
-      var newContents = []
-      contents.forEach(function(substr) {
-        console.log(substr)
-        substr.split(lexer.rules[v]).forEach(function(subsubstr) {
-          console.log(subsubstr)
-          newContents.push(subsubstr)
-        })
-      })
-      contents = newContents
-      //console.log(lexer.rules[v])
-    })
-    */
+     * TODO:
+     * We currentl ignore the error.
+     * If the file doesn't exist, we will create it.
+     * This is bad, exceptions other than the file not existing will cause
+     * the user's file to be overwritten. Need better logic
+     */
+    data = data || ""
+    data = data.replace(/\r\n|\r/g, '\n') // Deal with windows newlines
+               .replace(/\t/g, '  ') // Change tabs to spaces
+               .replace(/\u00a0/g, ' ') // Change non-breaking space to space
+               .replace(/\u2424/g, '\n') // Unicode newline to escaped newline
+    /**
+     * We simply place the file contents as the only member of the contents
+     * array, then we force segmentation of the file (aka split around newlines)
+     */
+    contents = [data]
     changed = true
     segmentFile()
-    doc.index = 0
-    cb()
+    doc.index = 0 // We are on the first line
+    cb() // Done loading
   })
 }
 
 segmentFile = function segmentFile() {
   if(!changed) return;
-  console.log("Segmenting File!")
+  console.log("Segmenting File!") //Debugging purposes
   var data = contents.join('\n')
   contents = data.split('\n')
   changed = false
