@@ -11,32 +11,48 @@
     <script>
       var doc = require('./doc.js')
       var gui = require('nw.gui')
-      process.chdir(gui.App.argv[0])
-      console.log(process.cwd())
       /**
-       * Handle all ace
+       * The next line fixes the current working directory after node-webkit
+       * changes it
+       */
+      process.chdir(gui.App.argv[0])
+      /**
+       * Handle all ace (we use the ace editor)
        */
       var editor = ace.edit("editor")
       editor.setTheme("ace/theme/monokai")
       editor.getSession().setMode("ace/mode/markdown")
       var container = document.getElementById("editor")
+      /**
+       * updateHeight makes sure that when the user changes the number of lines
+       * in the text editor, the editor will automagically update to wrap the
+       * content instead of adding a scrollbar.
+       */
       var updateHeight = function() {
         container.style.height =
           editor.getSession().getDocument().getLength() *
           editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth()
         editor.renderer.onResize(true)
       }
+      updateHeight() // Initial update
       editor.on("change",updateHeight)
       editor.on("change",function() {
+        /**
+         * When the user types data into the text editor, make sure that
+         * data gets forwarded to the doc datastructure
+         */
         doc.updateCurrentLine(editor.getSession().toString())
       })
-      updateHeight()
 
-      /**
-       * Handle all input events. Prevent them from falling to ace.
-       */
       var view = document.getElementById("view")
-      //Grab input before ace has received it
+      /**
+       * This event listener grabs input BEFORE ace receives it. This lets
+       * us override the default behaviour for actions such as enter and
+       * navigation. Each key listed here can grab the user input and do
+       * some pre-processing before ace receives the command. If you call
+       * e.stopPropagation() you can prevent the input from ever reaching
+       * the ace editor.
+       */
       view.addEventListener("keydown",function(e) {
         if(e.keyCode===40) { //down
           if( editor.session.getLength() ===
@@ -62,7 +78,10 @@
         }
         console.log(e.keyCode)
       },true)
-      //Grab input after ace has received it
+      /**
+       * This listener receives events *after* the ace editor has already
+       * processed the command. Stopping propogation here wont do much.
+       */
       view.addEventListener("keydown",function(e) {
         if(e.keyCode===13) { //enter
           console.log("Updating")
@@ -75,6 +94,11 @@
       })
     </script>
     <script>
+      /**
+       * This is where the magic happens. We kick the editor into action here
+       * initializing the file and registering event listeners that manage
+       * communication between the text editor and the doc datastructure.
+       */
       var doc = require('./doc.js')
       var gui = require('nw.gui')
       var marked = require('marked')

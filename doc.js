@@ -38,7 +38,7 @@ doc.init = function init(file,cb) {
   fs.readFile(file,{"encoding":"utf-8"},function(e,data) {
     /**
      * TODO:
-     * We currentl ignore the error.
+     * We currently ignore the error.
      * If the file doesn't exist, we will create it.
      * This is bad, exceptions other than the file not existing will cause
      * the user's file to be overwritten. Need better logic
@@ -60,6 +60,10 @@ doc.init = function init(file,cb) {
   })
 }
 
+/**
+ * SegmentFile splits the file up into individual units that can easily be
+ * manipulated by the text editor. Currently, the logic splits around newlines.
+ */
 segmentFile = function segmentFile() {
   if(!changed) return;
   console.log("Segmenting File!") //Debugging purposes
@@ -69,18 +73,31 @@ segmentFile = function segmentFile() {
   fsWorker.save(data)
 }
 
+/**
+ * Get the line the user is currently on
+ */
 doc.getCurrent = function getCurrent() {
   return contents[doc.index]
 }
 
+/**
+ * Get all of the file contents after the line the user is currently on
+ */
 doc.getNext = function getNext() {
   return contents.slice(doc.index+1).join('\n')
 }
 
+/**
+ * Get all of the file contents before the line the user is currently on
+ */
 doc.getPrev = function getPrev() {
   return contents.slice(0,doc.index).join('\n')
 }
 
+/**
+ * Increase the current line number the user is on by val.
+ * i.e. 1 will move the user forward 1 line
+ */
 doc.incr = function incr(val) {
   val = val || 1
   if(doc.index+val>contents.length-1) return;
@@ -89,6 +106,10 @@ doc.incr = function incr(val) {
   doc.emit("change")
 }
 
+/**
+ * Reduce the current line number the user is on by val.
+ * i.e. 1 will move the user back 1 line
+ */
 doc.decr = function decr(val) {
   val = val || 1
   if(doc.index-val<0) return;
@@ -97,6 +118,9 @@ doc.decr = function decr(val) {
   doc.emit("change")
 }
 
+/**
+ * Overwrite the current line with the passed in string
+ */
 doc.updateCurrentLine = function updateCurrentLine(string) {
   fsWorker.save(contents.join('\n'))
   if(contents[doc.index] == string) return;
@@ -104,6 +128,9 @@ doc.updateCurrentLine = function updateCurrentLine(string) {
   changed = true
 }
 
+/**
+ * Deletes the current line in the document.
+ */
 doc.deleteCurrent = function deleteCurrent() {
   contents = Array.prototype.concat(contents.slice(0,doc.index),contents.slice(doc.index+1))
   doc.index--
@@ -111,6 +138,9 @@ doc.deleteCurrent = function deleteCurrent() {
   doc.emit("change")
 }
 
+/**
+ * Get the number of lines in the document (currently split around newlines)
+ */
 doc.rows = function rows() {
   return contents.length
 }
