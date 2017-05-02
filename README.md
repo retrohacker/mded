@@ -1,6 +1,8 @@
 mded
 ===
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/retrohacker/mded.svg)](https://greenkeeper.io/)
+
 The first intuitive markdown editor
 
 # For Users
